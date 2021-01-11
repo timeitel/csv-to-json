@@ -3,27 +3,35 @@ const csvFilePath = './import-data.csv';
 const csv = require('csvtojson');
 const outputFile = 'formatted-data.json';
 
+createFile();
 convertToJSON();
 
 async function convertToJSON() {
-  fs.unlinkSync(outputFile);
-
+  const questions = await csv().fromFile(csvFilePath);
   const writeStream = fs.createWriteStream(outputFile, {
     flags: 'a'
   });
-  const questions = await csv().fromFile(csvFilePath);
 
   // parse and reformat to be bulk imported into Elasticsearch
-  for (let q of questions) {
+  for (const q of questions) {
+    if (!q.QUESTION.length > 0) {
+      break;
+    }
+
     writeStream.write('{ "index": {} }\n');
     writeStream.write(
       `{ "QUESTION": "${q.QUESTION}", "CORRECT": "1", "ANSWER_1": "${q.ANSWER}", "ANSWER_2": "${q.WRONG_1}", "ANSWER_3": "${q.WRONG_2}", "ANSWER_4": "${q.WRONG_3}", "CATEGORIES": "video games gaming call of duty" }\n`
     );
-
-    // break;
   }
 
   writeStream.write('\n');
   writeStream.end();
-  console.log('Finished formatting json');
+  console.log('Finished formatting to Elasticsearch json import');
+}
+
+function createFile() {
+  // create or overwrite
+  fs.writeFileSync(outputFile, '', function (err) {
+    if (err) throw err;
+  });
 }
