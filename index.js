@@ -1,5 +1,5 @@
 const fs = require('fs');
-const csvFilePath = './data.csv';
+const csvFilePath = './gaming-data.csv';
 const csv = require('csvtojson');
 
 convertToJSON();
@@ -9,9 +9,8 @@ async function convertToJSON() {
 
   // parse and reformat
   jsonFormatted = jsonArray.map((obj) => {
-    console.log(obj);
     return {
-      QUESTION,
+      QUESTION: obj.QUESTION,
       CORRECT: '1',
       ANSWER_1: obj.ANSWER,
       ANSWER_2: obj.WRONG_1,
