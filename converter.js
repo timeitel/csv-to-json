@@ -1,7 +1,7 @@
 import pkg from 'csvtojson';
 const { csv } = pkg;
 import * as fs from 'fs';
-const outputFile = 'formatted-data.json';
+const outputFile = 'formatted-questions.json';
 
 async function convertToJSON(csvFilePath) {
   const questions = await csv().fromFile(csvFilePath);
