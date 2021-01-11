@@ -8,11 +8,20 @@ async function convertToJSON() {
   const jsonArray = await csv().fromFile(csvFilePath);
 
   // parse and reformat
-  //   jsonFormatted = Object.entries(jsonArray).map(([k, v]) => {
-  //     return {};
-  //   });
+  jsonFormatted = jsonArray.map((obj) => {
+    console.log(obj);
+    return {
+      QUESTION,
+      CORRECT: '1',
+      ANSWER_1: obj.ANSWER,
+      ANSWER_2: obj.WRONG_1,
+      ANSWER_3: obj.WRONG_2,
+      ANSWER_4: obj.WRONG_3,
+      CATEGORIES: 'video games gaming call of duty'
+    };
+  });
 
-  fs.writeFile('data.json', JSON.stringify(jsonArray), (err) => {
+  fs.writeFile('gaming-data.json', JSON.stringify(jsonFormatted), (err) => {
     if (err) {
       throw err;
     }
