@@ -1,29 +1,29 @@
 const fs = require('fs');
-const csvFilePath = './gaming-data.csv';
+const csvFilePath = './import-data.csv';
 const csv = require('csvtojson');
+const outputFile = 'formatted-data.json';
 
 convertToJSON();
 
 async function convertToJSON() {
-  const jsonArray = await csv().fromFile(csvFilePath);
+  fs.unlinkSync(outputFile);
 
-  // parse and reformat
-  jsonFormatted = jsonArray.map((obj) => {
-    return {
-      QUESTION: obj.QUESTION,
-      CORRECT: '1',
-      ANSWER_1: obj.ANSWER,
-      ANSWER_2: obj.WRONG_1,
-      ANSWER_3: obj.WRONG_2,
-      ANSWER_4: obj.WRONG_3,
-      CATEGORIES: 'video games gaming call of duty'
-    };
+  const writeStream = fs.createWriteStream(outputFile, {
+    flags: 'a'
   });
+  const questions = await csv().fromFile(csvFilePath);
 
-  fs.writeFile('gaming-data.json', JSON.stringify(jsonFormatted), (err) => {
-    if (err) {
-      throw err;
-    }
-    console.log('JSON data exported.');
-  });
+  // parse and reformat to be bulk imported into Elasticsearch
+  for (let q of questions) {
+    writeStream.write('{ "index": {} }\n');
+    writeStream.write(
+      `{ "QUESTION": "${q.QUESTION}", "CORRECT": "1", "ANSWER_1": "${q.ANSWER}", "ANSWER_2": "${q.WRONG_1}", "ANSWER_3": "${q.WRONG_2}", "ANSWER_4": "${q.WRONG_3}", "CATEGORIES": "video games gaming call of duty" }\n`
+    );
+
+    // break;
+  }
+
+  writeStream.write('\n');
+  writeStream.end();
+  console.log('Finished formatting json');
 }
