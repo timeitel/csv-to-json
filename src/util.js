@@ -1,5 +1,5 @@
 import { mostCommonWordsCount } from 'truly-unique';
-import { convertToJSON } from './converter.js';
+import axios from 'axios';
 
 function mostCommonWords(questionsArray) {
   let combinedString = '';
@@ -19,13 +19,11 @@ function mostCommonWords(questionsArray) {
   return commonWordsFormatted;
 }
 
-async function convertAndPost() {
-  const questions = await convertToJSON('./assets/import-data.csv');
-
+async function postToElasticSearch(docs) {
   try {
     const res = await axios.post(
       'http://localhost:9200/questions/_bulk?pretty',
-      questions,
+      docs,
       {
         headers: {
           'Content-Type': 'application/x-ndjson'
@@ -39,4 +37,4 @@ async function convertAndPost() {
   }
 }
 
-export { mostCommonWords, convertAndPost };
+export { mostCommonWords, postToElasticSearch };
