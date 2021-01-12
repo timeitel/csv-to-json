@@ -1,12 +1,5 @@
 import { mostCommonWordsCount } from 'truly-unique';
-import * as fs from 'fs';
-
-function createFile() {
-  // create or overwrite
-  fs.writeFileSync('./assets/formatted-questions.json', '', function (err) {
-    if (err) throw err;
-  });
-}
+import { convertToJSON } from './converter.js';
 
 function mostCommonWords(questionsArray) {
   let combinedString = '';
@@ -26,4 +19,24 @@ function mostCommonWords(questionsArray) {
   return commonWordsFormatted;
 }
 
-export { createFile, mostCommonWords };
+async function convertAndPost() {
+  const questions = await convertToJSON('./assets/import-data.csv');
+
+  try {
+    const res = await axios.post(
+      'http://localhost:9200/questions/_bulk?pretty',
+      questions,
+      {
+        headers: {
+          'Content-Type': 'application/x-ndjson'
+        }
+      }
+    );
+
+    console.log(res.data);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export { mostCommonWords, convertAndPost };
