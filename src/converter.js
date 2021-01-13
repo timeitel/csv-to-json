@@ -7,6 +7,7 @@ async function convertToJSON(csvFilePath) {
   const questions = await csv().fromFile(csvFilePath);
   const file = csvFilePath.split('/').pop();
   const fileName = file.substring(0, file.indexOf('.'));
+
   const labels = mostCommonWords(questions);
 
   // parse and reformat to be bulk imported into Elasticsearch
@@ -16,7 +17,7 @@ async function convertToJSON(csvFilePath) {
     }
 
     jsonQuestion += '{ "index": {} }\n';
-    jsonQuestion += `{ "QUESTION": "${q.QUESTION}", "CORRECT": "1", "ANSWER_1": "${q.ANSWER}", "ANSWER_2": "${q.WRONG_1}", "ANSWER_3": "${q.WRONG_2}", "ANSWER_4": "${q.WRONG_3}", "CATEGORY": "${fileName}", "LABELS": "${labels}" }\n`;
+    jsonQuestion += `{ "QUESTION": "${q.QUESTION}", "CORRECT": [ "${q.ANSWER}" ], "WRONG": [ "${q.WRONG_1}", "${q.WRONG_2}", "${q.WRONG_3}" ], "CATEGORY": "${fileName}", "LABELS": "${labels}" }\n`;
   }
   console.log('Finished formatting to Elasticsearch json');
 
