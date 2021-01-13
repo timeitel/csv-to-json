@@ -12,7 +12,7 @@ function mostCommonWords(questionsArray) {
 
   const commonWords = mostCommonWordsCount(combinedString, { stopwords: true });
   const commonWordsFormatted = commonWords
-    .slice(0, 20)
+    .slice(0, 10)
     .map((w) => w.key)
     .join(' ');
 
